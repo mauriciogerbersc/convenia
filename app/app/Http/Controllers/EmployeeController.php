@@ -21,9 +21,9 @@ class EmployeeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $employees = $this->employee->listByUser(1);
+        $employees = $this->employee->listByUser($request->user()->id);
 
         return response()->json($employees);
     }
@@ -37,7 +37,7 @@ class EmployeeController extends Controller
     public function store(StoreEmployeeRequest $request)
     {
         $employeeData = $request->validated();
-        $employeeData['user_id'] = 1;
+        $employeeData['user_id'] = $request->user()->id;
         $employee = $this->employee->create($employeeData);
 
         return response()->json($employee, 200);
