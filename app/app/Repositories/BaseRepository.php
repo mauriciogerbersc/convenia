@@ -18,4 +18,9 @@ class BaseRepository implements BaseRepositoryInterface
     {
         return $this->model->create($data);
     }
+
+    public function all(array $columns = ['*'])
+    {
+        return $this->model->all($columns);
+    }
 }

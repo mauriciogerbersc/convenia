@@ -15,6 +15,11 @@ class EmployeeService extends BaseService implements BaseServiceInterface
         $this->employeeRepository = $employeeRepository;
     }
 
+    public function listByUser(int $userId): array
+    {
+        return $this->employeeRepository->listByUser(['user_id' => $userId])->toArray();
+    }
+
     public function create(array $params): array
     {
         return $this->employeeRepository->create($params)->toArray();

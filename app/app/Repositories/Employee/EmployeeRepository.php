@@ -12,6 +12,11 @@ class EmployeeRepository extends BaseRepository implements BaseRepositoryInterfa
         parent::__construct($model);
     }
 
+    public function listByUser(array $columns = ['*']) 
+    {
+        return $this->model->where($columns)->get();
+    }
+
     public function create(array $params): Employee
     {
         return $this->model->create($params);

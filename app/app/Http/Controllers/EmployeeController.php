@@ -23,7 +23,9 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
+        $employees = $this->employee->listByUser(1);
+
+        return response()->json($employees);
     }
 
     /**
