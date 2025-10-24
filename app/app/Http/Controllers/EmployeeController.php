@@ -6,6 +6,7 @@ use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
 use App\Services\Employee\EmployeeService;
+use Exception;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -55,6 +56,7 @@ class EmployeeController extends Controller
      */
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
+        $this->isNotAuthorized($request, $employee);
         $this->employee->update($request->validated(), $employee->id);
 
         return response()->json([], 201);
@@ -69,8 +71,18 @@ class EmployeeController extends Controller
      */
     public function destroy(Request $request, Employee $employee)
     {
+        $this->isNotAuthorized($request, $employee);
         $this->employee->delete($employee->id);
 
         return response()->json([], 204);
+    }
+
+    /**
+     * @param Request $request
+     * @param Employee $employee
+     * @return boolean
+     */
+    private function isNotAuthorized(Request $request, Employee $employee) {
+        abort_if($employee->user_id !== $request->user()->id, 403, 'Forbidden');
     }
 }
