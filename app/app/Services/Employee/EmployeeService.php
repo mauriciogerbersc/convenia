@@ -29,4 +29,9 @@ class EmployeeService extends BaseService implements BaseServiceInterface
     {
         return $this->employeeRepository->updateById($params, $employeeId);
     }
+
+    public function delete(int $employeeId)
+    {
+        return $this->employeeRepository->delete($employeeId);
+    }
 }

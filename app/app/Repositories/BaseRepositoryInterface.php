@@ -9,4 +9,6 @@ interface BaseRepositoryInterface
     public function all(array $columns = ['*']);
 
     public function updateById(array $data, int $id);
+
+    public function delete(int $id);
 }
