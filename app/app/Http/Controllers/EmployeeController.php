@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
+use App\Models\Employee;
 use App\Services\Employee\EmployeeService;
 use Illuminate\Http\Request;
 
@@ -43,27 +45,19 @@ class EmployeeController extends Controller
         return response()->json($employee, 200);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param UpdateEmployeeRequest $request
+     * @param Employee $employee
+     * @return void
      */
-    public function update(Request $request, $id)
+    public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
-        //
+        $this->employee->update($request->validated(), $employee->id);
+
+        return response()->json([], 201);
     }
 
     /**

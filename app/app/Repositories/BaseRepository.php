@@ -23,4 +23,10 @@ class BaseRepository implements BaseRepositoryInterface
     {
         return $this->model->all($columns);
     }
+
+    public function updateById(array $data, int $id)
+    {
+        return $this->model->where('id', $id)
+            ->update($data);
+    }
 }

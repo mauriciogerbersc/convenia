@@ -24,4 +24,9 @@ class EmployeeService extends BaseService implements BaseServiceInterface
     {
         return $this->employeeRepository->create($params)->toArray();
     }
+
+    public function update(array $params, int $employeeId): int
+    {
+        return $this->employeeRepository->updateById($params, $employeeId);
+    }
 }
