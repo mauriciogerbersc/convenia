@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ImportEmployeesRequest;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use App\Jobs\ProcessEmployeesImport;
 use App\Models\Employee;
 use App\Services\Employee\EmployeeService;
-use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
 {
@@ -95,17 +96,15 @@ class EmployeeController extends Controller
      */
     public function import(ImportEmployeesRequest $request)
     {
-        $rows = $request->validRows();
+        $filename = Str::uuid().'.csv';
+        $path = $request->file('file')->storeAs("imports/{$request->user()->id}", $filename);
 
-        foreach ($rows as $data) {
-            $this->createEmployee($data, $request->user()->id);
-        }
+        ProcessEmployeesImport::dispatch($request->user()->id, $path);
 
         return response()->json([
-            'inserted' => count($rows),
-            'failed'   => count($request->rowErrors()),
-            'errors'   => $request->rowErrors(),
-        ], 201);
+            'status' => 'queued',
+            'file'   => $filename,
+        ], 202);
     }
 
     /**
