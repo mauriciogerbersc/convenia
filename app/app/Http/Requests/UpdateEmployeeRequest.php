@@ -25,15 +25,31 @@ class UpdateEmployeeRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'  => ['sometimes','required','string','max:255'],
-            'email' => ['sometimes','required','email','max:255',
-                Rule::unique('employees')->ignore($this->route('employee')->id)->where(fn($q)=>$q->where('user_id',$this->user()->id))
+            'name'  => ['sometimes', 'required', 'string', 'max:255'],
+            'email' => [
+                'sometimes',
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('employees')->ignore($this->route('employee')->id)->where(fn($q) => $q->where('user_id', $this->user()->id))
             ],
-            'document'   => ['sometimes','required','digits:11',
-                Rule::unique('employees')->ignore($this->route('employee')->id)->where(fn($q)=>$q->where('user_id',$this->user()->id))
+            'document'   => [
+                'sometimes',
+                'required',
+                'digits:11',
+                Rule::unique('employees')->ignore($this->route('employee')->id)->where(fn($q) => $q->where('user_id', $this->user()->id))
             ],
-            'city'  => ['sometimes','required','string','max:255'],
-            'state' => ['sometimes','required','string','size:2'],
+            'city'  => ['sometimes', 'required', 'string', 'max:255'],
+            'state' => ['sometimes', 'required', 'string', 'size:50'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->filled('document')) {
+            $this->merge([
+                'document' => preg_replace('/\D+/', '', (string) $this->input('document')),
+            ]);
+        }
     }
 }

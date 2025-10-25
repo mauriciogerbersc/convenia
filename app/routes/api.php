@@ -23,5 +23,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/', [EmployeeController::class, 'store']);
         Route::put('/{employee}', [EmployeeController::class, 'update']);
         Route::delete('/{employee}', [EmployeeController::class, 'destroy']);
+        Route::post('/importEmployees', [EmployeeController::class, 'import']);
     });
 });

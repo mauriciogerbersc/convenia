@@ -28,7 +28,16 @@ class StoreEmployeeRequest extends FormRequest
             'email' => 'required|email|unique:employees',
             'document' => 'required|digits:11|unique:employees',
             'city' => 'required|string',
-            'state' => 'required|string|max:2',
+            'state' => 'required|string|max:50',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $document = preg_replace('/\D+/', '', (string) $this->input('document'));
+
+        $this->merge([
+            'document' => $document
+        ]);
     }
 }

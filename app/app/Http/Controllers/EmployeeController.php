@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ImportEmployeesRequest;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
@@ -40,12 +41,23 @@ class EmployeeController extends Controller
     public function store(StoreEmployeeRequest $request)
     {
         $employeeData = $request->validated();
-        $employeeData['user_id'] = $request->user()->id;
-        $employee = $this->employee->create($employeeData);
+        $employeCreated = $this->createEmployee($employeeData, $request->user()->id);
 
-        return response()->json($employee, 200);
+        return response()->json($employeCreated, 200);
     }
 
+    /**
+     * @param array $employeeData
+     * @param integer $userId
+     * @return void
+     */
+    private function createEmployee(array $employeeData, int $userId)
+    {
+        $employeeData['user_id'] = $userId;
+        $employee = $this->employee->create($employeeData);
+
+        return $employee;
+    }
 
     /**
      * Update the specified resource in storage
@@ -78,11 +90,31 @@ class EmployeeController extends Controller
     }
 
     /**
+     * @param ImportEmployeesRequest $request
+     * @return void
+     */
+    public function import(ImportEmployeesRequest $request)
+    {
+        $rows = $request->validRows();
+
+        foreach ($rows as $data) {
+            $this->createEmployee($data, $request->user()->id);
+        }
+
+        return response()->json([
+            'inserted' => count($rows),
+            'failed'   => count($request->rowErrors()),
+            'errors'   => $request->rowErrors(),
+        ], 201);
+    }
+
+    /**
      * @param Request $request
      * @param Employee $employee
      * @return boolean
      */
-    private function isNotAuthorized(Request $request, Employee $employee) {
+    private function isNotAuthorized(Request $request, Employee $employee)
+    {
         abort_if($employee->user_id !== $request->user()->id, 403, 'Forbidden');
     }
 }
