@@ -5,6 +5,7 @@ namespace App\Services\Employee;
 use App\Repositories\Employee\EmployeeRepository;
 use App\Services\BaseService;
 use App\Services\BaseServiceInterface;
+use Illuminate\Support\Facades\Cache;
 
 class EmployeeService extends BaseService implements BaseServiceInterface
 {
@@ -17,7 +18,13 @@ class EmployeeService extends BaseService implements BaseServiceInterface
 
     public function listByUser(int $userId): array
     {
-        return $this->employeeRepository->listByUser(['user_id' => $userId])->toArray();
+        $key = "employees:user:{$userId}";
+        
+        $employees = Cache::remember($key, now()->addMinutes(5), function() use ($userId) {
+            return $this->employeeRepository->listByUser(['user_id' => $userId])->toArray();
+        });
+
+        return $employees;
     }
 
     public function create(array $params): array
