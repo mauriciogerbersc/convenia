@@ -54,7 +54,7 @@ QUEUE_CONNECTION=database
 CACHE_DRIVER=file       # ou redis
 
 
-Seeds criam usuários:
+# Seeds criam usuários:
 
 gestojohndoe@convenia.com.br
  / 123456
@@ -86,11 +86,11 @@ Dica de rotas: registre /api/employees/import ANTES do apiResource('employees', 
 
 Listar (com cache)
 
-GET /api/employees
+# GET /api/employees
 
 Criar
 
-POST /api/employees
+# POST /api/employees
 
 {
   "name": "Ana",
@@ -103,26 +103,26 @@ POST /api/employees
 
 O CPF é normalizado para dígitos (remove . e -) antes de validar/salvar.
 
-Atualizar
+# Atualizar
 
 PUT /api/employees/{employee}
 (403 se não for o dono)
 
-Remover
+# Remover
 
 DELETE /api/employees/{employee}
 (403 se não for o dono)
 
 Importar CSV (assíncrono)
 
-POST /api/employees/import (multipart/form-data)
+# POST /api/employees/import (multipart/form-data)
 
 curl -X POST http://localhost:8000/api/employees/import \
   -H "Authorization: Bearer <JWT>" -H "Accept: application/json" \
   -F "file=@employees.csv"
 
 
-Cabeçalho do CSV (obrigatório):
+## Cabeçalho do CSV (obrigatório):
 
 name,email,cpf,city,state
 
@@ -140,7 +140,7 @@ Job ProcessEmployeesImport (fila imports):
 
 valida header
 
-normaliza CPF (apenas dígitos) e state (maiúsculas)
+normaliza CPF (apenas dígitos) e state 
 
 valida cada linha (obrigatórios + unicidade por gestor)
 
