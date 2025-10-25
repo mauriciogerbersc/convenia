@@ -149,4 +149,31 @@ class EmployeeControllerTest extends TestCase
         $res = $this->deleteJson("/api/employees/{$emp->id}", [], $this->authHeaders($owner));
         $res->assertNoContent(); // 204
     }
+
+    /** @test */
+    public function import_queues_job_and_stores_file()
+    {
+        $user = User::factory()->create();
+
+        Storage::fake('local');
+        Queue::fake();
+
+        $csv  = "name,email,cpf,city,state\nAna,ana@x.com,12345678901,Floripa,SC\n";
+        $file = UploadedFile::fake()->createWithContent('employees.csv', $csv);
+
+        $res = $this->post('/api/employees/importEmployees', ['file' => $file], $this->authHeaders($user));
+
+        $res->assertStatus(202)
+            ->assertJsonStructure(['status','file']);
+
+        $filename   = $res->json('file');
+        $storedPath = "imports/{$user->id}/{$filename}";
+
+        Storage::disk('local')->assertExists($storedPath);
+
+        Queue::assertPushed(ProcessEmployeesImport::class, function ($job) use ($user, $storedPath) {
+            return $job->userId === $user->id
+                && $job->storagePath === $storedPath;
+        });
+    }
 }
